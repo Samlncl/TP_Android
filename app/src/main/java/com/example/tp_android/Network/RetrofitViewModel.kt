@@ -13,6 +13,12 @@ class RetrofitViewModel(
     private val _products = MutableLiveData<List<Product>>()
     val products: LiveData<List<Product>> = _products
 
+    private val _categories = MutableLiveData<List<String>>()
+    val categories: LiveData<List<String>> = _categories
+
+    private val _filteredProducts = MutableLiveData<List<Product>>()
+    val filteredProducts: LiveData<List<Product>> = _filteredProducts
+
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
@@ -24,6 +30,26 @@ class RetrofitViewModel(
         viewModelScope.launch {
             try {
                 _products.value = retrofitServices.getData()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to load products: ${e.message}"
+            }
+        }
+    }
+
+    private fun loadCategories() {
+        viewModelScope.launch {
+            try {
+                _categories.value = retrofitServices.getCategories()
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to load categories: ${e.message}"
+            }
+        }
+    }
+
+    fun loadProductsByCategory(category: String) {
+        viewModelScope.launch {
+            try {
+                _filteredProducts.value = retrofitServices.getProductsByCategory(category)
             } catch (e: Exception) {
                 _errorMessage.value = "Failed to load products: ${e.message}"
             }
